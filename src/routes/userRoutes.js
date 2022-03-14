@@ -66,8 +66,6 @@ router.post("/register", async (req, res) => {
 
 router.post("/login", async (req, res, next) => {
     /*Aunthenticate*/ 
-    const {email: emaill, password: pass} = req.body;
-
     passport.authenticate("local", (err, user, info) => {
         if (err) throw err;
         if (!user) res.status(401).send("Correo o Contraseña incorrecto, por favor inténtelo de nuevo");
