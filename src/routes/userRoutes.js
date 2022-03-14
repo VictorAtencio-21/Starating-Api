@@ -2,10 +2,9 @@ const express = require('express');
 const router = express.Router();
 const passport = require('passport');
 const session = require('express-session')
-const mongoose = require('mongoose');
+require("../../database").connect();
 
 const SECRET = process.env.SECRET || "No tiene variable de entorno, uh? ☺"
-const DB = process.env.DB || "mongodb://localhost/users"
 
 const User = require("../models/User");
 
@@ -19,8 +18,6 @@ router.use(session({
 router.use(passport.initialize())
 router.use(passport.session())
 require("../passport/passportConfig")(passport);
-
-mongoose.connect(DB, () => console.log("Connected to db"));
 
 router.post("/register", async (req, res) => {
     var error = []; // <- string array that determines which error there is **NOT-FINAL**

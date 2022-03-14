@@ -1,6 +1,7 @@
 const express = require('express');
 const app = express();
-const mongo = require('mongoose');
+const cors = require('cors')
+
 const PORT = process.env.PORT || 2000;
 const HOST = process.env.HOST || 'localhost';
 
@@ -16,6 +17,7 @@ const session = require('express-session')
 
 app.use(express.urlencoded({extended: false}))
 app.use(express.json())
+app.use(cors());
 
 /*Mongoose logic to connect to db */
 
