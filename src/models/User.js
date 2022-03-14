@@ -5,9 +5,9 @@ const bcrypt = require('bcryptjs');
 const UserSchema = new Schema(
     {
         name: {type: String,  required: true, trim: true},
-        lastname: {type: String,  required: true, unique: true, trim: true},
+        lastname: {type: String,  required: true, trim: true},
         username: {type: String,  required: true, unique: true},
-        email: {type: String,  required: true, trim: true},
+        email: {type: String,  required: true, trim: true, unique: true},
         visibleEmail: {type: Boolean},
         password: {type: String, required: true},
         profilePhoto: {type: String},
@@ -18,7 +18,7 @@ const UserSchema = new Schema(
     }
 )
 
-UserSchema.methods.encryptPassword = async password => {
+UserSchema.methods.encryptPassword = async function (password){
     const salt = await bcrypt.genSalt(10);
     return await bcrypt.hash(password, salt);
 };

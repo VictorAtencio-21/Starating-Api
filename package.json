@@ -1,8 +1,8 @@
 {
   "name": "backend",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "API for Starating-App made in NodeJS &amp; Express, using MongoDB as its database.",
+  "main": "server.js",
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js"
@@ -15,11 +15,20 @@
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "express": "^4.17.3",
+    "express-session": "^1.17.2",
     "mongoose": "^6.2.5",
     "passport": "^0.5.2",
     "passport-local": "^1.0.0"
   },
   "devDependencies": {
     "nodemon": "^2.0.15"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/VictorAtencio-21/Starating-Api.git"
+  },
+  "bugs": {
+    "url": "https://github.com/VictorAtencio-21/Starating-Api/issues"
+  },
+  "homepage": "https://github.com/VictorAtencio-21/Starating-Api#readme"
 }
