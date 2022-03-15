@@ -3,51 +3,84 @@ const router = express.Router();
 
 router.use(express.json());
 
-const Movies = require("../models/Movie");
+const Movie = require("../models/Movie");
 
 //Home
-router.get("/home", async (req, res) => {
-
+router.get("/allMovies", async (req, res) => {
     /*fetch all movies from most popular to least popular*/
-
     /*Show them*/
-})
 
-//Search Engine
-router.get("/search/:filter", async (req, res) => {
-    const filter = req.params.filter;
-
-    /* fetch the movies based on the filter that the user passes*/
-
-    /*Show said movies */
-
-})
-
-//User Page
-router.get("/user/:username", async (req, res) => {
-    const username = req.params.username;
-
-    /*Obtain info from user = username*/
-    
-    /*Show said info */
+    try {
+        let movies = await Movie.find({}).sort({"rating": -1});
+        console.table(movies);
+        res.json(movies)    
+    } catch (error) {
+        console.log(error.message);
+    }
 })
 
 //Movie Page
 router.get("/movies/:title", async (req, res) => {
-    const nameMovie = req.params.title;
-
     /*Obtain movie data for movie of title = nameMovie*/
-
     /*Show movie data */
+    
+    try {
+        const {title: nameMovie} = req.params;
+        
+        let movies = await Movie.findOne({title: nameMovie});
+        console.table(movies);
+        res.json(movies)
+    } catch (error) {
+        console.log(error.message);
+    }
 })
 
-//Comments
-router.post("/newComment", async (req, res) => {
-    const {username} = req.body.username;
-    const {date} = req.body.date;
-    const {comment} = req.body.comment;
+//ONLY FOR DEVELOPMENT ROUTES
+// ----------------------------------------------------------------------------
+router.post("/posty", async (req, res) => {
+    try {
+        const {title: tit, genre: gen, rating: ranked, photos: img} = req.body;
+        const newMovie = new Movie({title: tit, genre: gen, rating: ranked, photos: img});
 
-    /*Append comment to database */
+        await newMovie.save();
+        //console.table(newMovie);
+        res.status(201).send("Registro de la peli exitosamente!")
+    } catch (error) {
+        console.log(error.message);
+    }
+});
+
+router.delete("/del/:title", async (req, res) =>{
+    try{
+        const {title: tit} = req.params;
+
+        const mov = await Movie.findOne({title: tit});
+        if(mov){
+            await mov.delete();
+            res.status(200).json("Deleted Movie :o oops...")
+        }
+    }catch(error){
+        console.log(error.message);
+    }
 })
+
+router.delete("/deleted", async (req, res) =>{
+    try {
+        const db = mongoose.connection.db;
+    
+        const collections = await db.listCollections().toArray();
+        collections
+          .map((collection) => collection.name)
+          .forEach(async (collectionName) => {
+            db.dropCollection(collectionName);
+          });
+    
+        res.sendStatus(200);
+      } catch (e) {
+        console.log(e);
+        res.sendStatus(500);
+      }
+})
+//-------------------------------------------------------------------------
 
 module.exports = router;

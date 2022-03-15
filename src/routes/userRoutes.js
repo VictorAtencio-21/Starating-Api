@@ -1,35 +1,20 @@
 const express = require('express');
 const router = express.Router();
-const passport = require('passport');
 const bcrypt = require("bcrypt");
 const jwt = require('jsonwebtoken');
-const session = require('express-session')
 const verifyToken = require('../middleware/auth')
 require("../../database").connect();
-
-
-const SECRET = process.env.SECRET || "No tiene variable de entorno, uh? ☺"
 
 const User = require("../models/User");
 
 router.use(express.json());
-
-router.use(session({
-    secret: SECRET,
-    resave: false,
-    saveUninitialized: true
-}))
-router.use(passport.initialize())
-router.use(passport.session())
-require("../passport/passportConfig")(passport);
 
 router.post("/register", async (req, res) => {
     var error = []; // <- string array that determines which error there is **NOT-FINAL**
     const {name: nam, lastname: last, username: usernam, email: emaill, password: pass} = req.body;
 
     //Verifying logic
-    
-    /*Verify username (unique)*/
+        /*Verify username (unique)*/
     try {
        let newUsern = await User.findOne({username: usernam});
        if(!(newUsern == null)){
@@ -39,7 +24,7 @@ router.post("/register", async (req, res) => {
         console.log(error.message);
     }
     
-    /*Verify email (unique)*/
+        /*Verify email (unique)*/
     try {
        let newEmail = await User.findOne({email: emaill});
        if(!(newEmail == null)){
@@ -68,7 +53,7 @@ router.post("/register", async (req, res) => {
     }
 });
 
-router.post("/login", async (req, res, next) => {
+router.post("/login", async (req, res) => {
 
     //Using Jwt to authenticate the user 
     const { email, password } = req.body;
@@ -76,7 +61,7 @@ router.post("/login", async (req, res, next) => {
     const user = await User.findOne({email});
     if (!user) return res.status(401).send('incorrect email address. Please try again');
     //Aqui deberia ir la comparacion de password con bcrypt
-
+    // aquí esta pibe v
    const match = await bcrypt.compare(password, user.password);
 
     if(!(match)){
@@ -86,6 +71,17 @@ router.post("/login", async (req, res, next) => {
     const token = jwt.sign({_id: user._id}, 'secretkey');
     res.json({token})
 });
+
+//User Page
+router.get("/user/:username", async (req, res) => {
+    const username = req.params.username;
+
+    /*Obtain info from user = username*/
+    const user = await User.findOne({username});
+    /*Show said info */
+    if(username) return res.json(user);
+    else return res.status(400).send("No user was found though... It's not in our database.");
+})
 
 //Testing route NONFINAL
 router.get('/getUsers', verifyToken, async (req, res) =>{
@@ -111,5 +107,6 @@ router.use(async (req, res, next) => {
     }
     next();
 })
+
 
 module.exports = router;
