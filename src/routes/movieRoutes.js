@@ -3,6 +3,8 @@ const router = express.Router();
 
 router.use(express.json());
 
+const Movies = require("../models/Movie");
+
 //Home
 router.get("/home", async (req, res) => {
 

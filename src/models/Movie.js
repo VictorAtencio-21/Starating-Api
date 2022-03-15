@@ -15,7 +15,7 @@ const MovieSchema = new Schema(
         photos: [{
             type: String
         }],
-        ratingNumber: {type: Float},
+        ratingNumber: {type: Number},
         comments: [{
             type: mongoose.Schema.Types.ObjectId, ref:'Comments'
         }]

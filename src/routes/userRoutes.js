@@ -1,8 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const passport = require('passport');
+const bcrypt = require("bcrypt");
+const jwt = require('jsonwebtoken');
 const session = require('express-session')
+const verifyToken = require('../middleware/auth')
 require("../../database").connect();
+
 
 const SECRET = process.env.SECRET || "No tiene variable de entorno, uh? ☺"
 
@@ -50,9 +54,12 @@ router.post("/register", async (req, res) => {
             /*Register logic to the mongo database*/ 
             const newUser = new User({name: nam, lastname: last, username: usernam, email: emaill, password: pass});
             newUser.password = await newUser.encryptPassword(newUser.password);
-    
+            
             await newUser.save();
-            res.sendStatus(201).send("Registro exitoso!")
+
+            const token = jwt.sign({_id: newUser._id}, 'secretkey')
+
+            res.status(200).json({token});
         } catch (error) {
             console.log(error.message);
         }
@@ -62,8 +69,21 @@ router.post("/register", async (req, res) => {
 });
 
 router.post("/login", async (req, res, next) => {
+
+    //Using Jwt to authenticate the user 
+    const { email, password } = req.body;
+
+    const user = await User.findOne({email});
+    if (!user) return res.status(401).send('incorrect email address or password');
+    //Aqui deberia ir la comparacion de password con bcrypt
+
+    const token = jwt.sign({_id: user._id}, 'secretkey');
+    res.json({token});
+
+
+    //Commented password Auth for now
     /*Aunthenticate*/ 
-    passport.authenticate("local", (err, user, info) => {
+    /*passport.authenticate("local", (err, user, info) => {
         if (err) throw err;
         if (!user) res.status(401).send("Correo o Contraseña incorrecto, por favor inténtelo de nuevo");
         else {
@@ -73,11 +93,11 @@ router.post("/login", async (req, res, next) => {
             console.log(req.user);
           });
         }
-      })(req, res, next);
+      })(req, res, next);*/
 });
 
 //Testing route NONFINAL
-router.get("/get", async (req, res) =>{
+router.get('/getUsers', verifyToken, async (req, res) =>{
     try {
         const x = await User.find();
         console.log(x);
@@ -85,6 +105,12 @@ router.get("/get", async (req, res) =>{
     } catch (error) {
         console.log(error.message);
     }
+});
+
+//Profile
+router.get('/profile', verifyToken, async (req, res) =>{
+    //Profile Data
+    res.json({"User Data": "data"})
 });
 
 //Keeping a log of user requests:
