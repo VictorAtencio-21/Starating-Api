@@ -74,26 +74,17 @@ router.post("/login", async (req, res, next) => {
     const { email, password } = req.body;
 
     const user = await User.findOne({email});
-    if (!user) return res.status(401).send('incorrect email address or password');
+    if (!user) return res.status(401).send('incorrect email address. Please try again');
     //Aqui deberia ir la comparacion de password con bcrypt
 
+   const match = await bcrypt.compare(password, user.password);
+
+    if(!(match)){
+        return res.status(401).send('incorrect password for that email address. Please try again');
+    }
+
     const token = jwt.sign({_id: user._id}, 'secretkey');
-    res.json({token});
-
-
-    //Commented password Auth for now
-    /*Aunthenticate*/ 
-    /*passport.authenticate("local", (err, user, info) => {
-        if (err) throw err;
-        if (!user) res.status(401).send("Correo o Contraseña incorrecto, por favor inténtelo de nuevo");
-        else {
-          req.logIn(user, (err) => {
-            if (err) throw err;
-            res.send("Autenticado exitosamente!");
-            console.log(req.user);
-          });
-        }
-      })(req, res, next);*/
+    res.json({token})
 });
 
 //Testing route NONFINAL
