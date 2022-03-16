@@ -35,12 +35,25 @@ router.get("/movies/:title", async (req, res) => {
     }
 })
 
+router.patch("/movieRating", async (req, res) => {
+    try {
+        const {_id: id} = req.body;
+        const movie =  await Movie.findOne({_id: id});
+
+        movie.rating = movie.rating + 1;
+        await movie.save(); 
+        res.json(movie);
+    } catch (error) {
+        console.log(error.message);
+    }
+})
+
 //ONLY FOR DEVELOPMENT ROUTES
 // ----------------------------------------------------------------------------
 router.post("/posty", async (req, res) => {
     try {
-        const {title: tit, genre: gen, rating: ranked, photos: img} = req.body;
-        const newMovie = new Movie({title: tit, genre: gen, rating: ranked, photos: img});
+        const {title: tit, genre: gen, rating: ranked, photos: img, director: direct, description: desc, length: len} = req.body;
+        const newMovie = new Movie({title: tit, genre: gen, rating: ranked, photos: img, director: direct, description: desc, length: len});
 
         await newMovie.save();
         //console.table(newMovie);
