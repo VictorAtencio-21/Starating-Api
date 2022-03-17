@@ -61,4 +61,15 @@ router.get("/comments/:movie", async (req, res) => {
     }
 })
 
+router.get("/comment/:id", async (req, res) => {
+    /*Get comments*/
+    try {
+        const id = req.params.id;
+        const comment = await Comments.find({_id: id});
+        res.json(comment);
+    } catch (error) {
+        console.log(error.message);
+    }
+})
+
 module.exports = router;
