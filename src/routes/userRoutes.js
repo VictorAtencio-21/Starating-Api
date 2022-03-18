@@ -73,14 +73,18 @@ router.post("/login", async (req, res) => {
 });
 
 //User Page
-router.get("/user/:username", verifyToken ,async (req, res) => {
-    const username = req.params.username;
-    /*Obtain info from user = username*/
-    const user = await User.findOne({username});
+router.get("/user/:id", verifyToken ,async (req, res, next) => {
+    /*Obtain info from id*/
+    await User.findById(req.params.id, (error, data) => {
+        if (error) {
+          return next(error)
+        } else {
+          res.status(200).json({
+            msg: data,
+          })
+        }
+      });
     /*Show said info */
-    
-    if(username) return res.json(user);
-    else return res.status(400).send("No user was found though... It's not in our database.");
 })
 
 //Testing route NONFINAL
