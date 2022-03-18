@@ -24,6 +24,9 @@
   "devDependencies": {
     "nodemon": "^2.0.15"
   },
+    "engines": {
+      "node": "16.13"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/VictorAtencio-21/Starating-Api.git"
