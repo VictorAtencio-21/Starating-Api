@@ -78,7 +78,7 @@ router.get("/user/:email", async (req, res) => {
       try {
         const x = await User.findOne({email: req.params.email});
         console.log(x);
-        res.send(x);
+        res.json(x);
     } catch (error) {
         console.log(error.message);
     }
