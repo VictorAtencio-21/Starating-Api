@@ -72,4 +72,14 @@ router.get("/comment/:id", async (req, res) => {
     }
 })
 
+router.get("/comments", async (req, res) => {
+    /*Get comments*/
+    try {
+        const comment = await Comments.find();
+        res.json(comment);
+    } catch (error) {
+        console.log(error.message);
+    }
+})
+
 module.exports = router;

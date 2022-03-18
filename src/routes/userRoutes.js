@@ -73,20 +73,20 @@ router.post("/login", async (req, res) => {
 });
 
 //Get User info
-router.get("/user/:email", verifyToken ,async (req, res, next) => {
-    /*Obtain info from id*/
-    await User.findOne({email: req.params.email}, (error, data) => {
-        if (error) {
-          return next(error)
-        } else {
-          res.status(200).json(data)
-        }
-      });
+router.get("/user/:email", async (req, res) => {
+    /*Obtain info from id*/ 
+      try {
+        const x = await User.findOne({email: req.params.email});
+        console.log(x);
+        res.send(x);
+    } catch (error) {
+        console.log(error.message);
+    }
     /*Show said info */
 })
 
 //Testing route NONFINAL
-router.get('/getUsers', verifyToken, async (req, res) =>{
+router.get('/getUsers', async (req, res) =>{
     try {
         const x = await User.find();
         console.log(x);
