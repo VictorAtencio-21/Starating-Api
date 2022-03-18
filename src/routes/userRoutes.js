@@ -3,7 +3,7 @@ const router = express.Router();
 const bcrypt = require("bcrypt");
 const jwt = require('jsonwebtoken');
 const verifyToken = require('../middleware/auth')
-require("../../database").connect();
+require("../utils/database").connect();
 
 const User = require("../models/User");
 
@@ -73,12 +73,12 @@ router.post("/login", async (req, res) => {
 });
 
 //User Page
-router.get("/user/:username", async (req, res) => {
+router.get("/user/:username", verifyToken ,async (req, res) => {
     const username = req.params.username;
-
     /*Obtain info from user = username*/
     const user = await User.findOne({username});
     /*Show said info */
+    
     if(username) return res.json(user);
     else return res.status(400).send("No user was found though... It's not in our database.");
 })
@@ -92,12 +92,6 @@ router.get('/getUsers', verifyToken, async (req, res) =>{
     } catch (error) {
         console.log(error.message);
     }
-});
-
-//Profile
-router.get('/profile', verifyToken, async (req, res) =>{
-    //Profile Data
-    res.json({"User Data": "data"})
 });
 
 //Keeping a log of user requests:

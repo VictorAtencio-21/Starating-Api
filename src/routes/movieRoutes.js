@@ -1,12 +1,15 @@
 const express = require('express');
 const router = express.Router();
+const upload = require('../utils/multer');
+const cloudinary = require('../utils/cloudinary');
+const verifyToken = require('../middleware/auth')
 
 router.use(express.json());
 
 const Movie = require("../models/Movie");
 
 //Home
-router.get("/allMovies", async (req, res) => {
+router.get("/allMovies", verifyToken, async (req, res) => {
     /*fetch all movies from most popular to least popular*/
     /*Show them*/
 
@@ -20,7 +23,7 @@ router.get("/allMovies", async (req, res) => {
 })
 
 //Movie Page
-router.get("/movies/:title", async (req, res) => {
+router.get("/movie/:title", verifyToken, async (req, res) => {
     /*Obtain movie data for movie of title = nameMovie*/
     /*Show movie data */
     
@@ -46,24 +49,34 @@ router.patch("/movieRating", async (req, res) => {
     } catch (error) {
         console.log(error.message);
     }
-})
+});
 
 //ONLY FOR DEVELOPMENT ROUTES
 // ----------------------------------------------------------------------------
-router.post("/posty", async (req, res) => {
+router.post("/posty", verifyToken, upload.single("poster"), async (req, res) => {
     try {
-        const {title: tit, genre: gen, rating: ranked, photos: img, director: direct, description: desc, length: len} = req.body;
-        const newMovie = new Movie({title: tit, genre: gen, rating: ranked, photos: img, director: direct, description: desc, length: len});
+        const {title: tit, genre: gen, rating: ranked, trailers: trailer } = req.body;
+
+        const result = await cloudinary.uploader.upload(req.file.path);
+
+        let newMovie = new Movie({
+            title: req.body.tit, 
+            genre: req.body.gen, 
+            rating: req.body.ranked, 
+            trailers: req.body.trailer,
+            poster: result.secure_url,
+            cloudinary_id: result.public_id,
+        });
 
         await newMovie.save();
         //console.table(newMovie);
-        res.status(201).send("Registro de la peli exitosamente!")
+        res.status(201).json(newMovie);
     } catch (error) {
         console.log(error.message);
     }
 });
 
-router.delete("/del/:title", async (req, res) =>{
+router.delete("/del/:title", verifyToken, async (req, res) =>{
     try{
         const {title: tit} = req.params;
 
@@ -77,7 +90,7 @@ router.delete("/del/:title", async (req, res) =>{
     }
 })
 
-router.delete("/deleted", async (req, res) =>{
+router.delete("/deleted", verifyToken, async (req, res) =>{
     try {
         const db = mongoose.connection.db;
     

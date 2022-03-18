@@ -9,6 +9,7 @@ const userRoutes = require("./src/routes/userRoutes")
 const movieRoutes = require("./src/routes/movieRoutes")
 const commentsRoutes = require("./src/routes/commentsRoutes")
 
+//Middlewares
 app.use(express.urlencoded({extended: false}))
 app.use(express.json())
 app.use(cors());
