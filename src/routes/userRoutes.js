@@ -72,16 +72,14 @@ router.post("/login", async (req, res) => {
     res.json({token})
 });
 
-//User Page
-router.get("/user/:id", verifyToken ,async (req, res, next) => {
+//Get User info
+router.get("/user/:email", verifyToken ,async (req, res, next) => {
     /*Obtain info from id*/
-    await User.findById(req.params.id, (error, data) => {
+    await User.findOne({email: req.params.email}, (error, data) => {
         if (error) {
           return next(error)
         } else {
-          res.status(200).json({
-            msg: data,
-          })
+          res.status(200).json(data)
         }
       });
     /*Show said info */
